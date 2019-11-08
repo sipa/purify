@@ -60,14 +60,14 @@ while True:
         if not is_prime(n1) or not is_prime(n2):
             continue
 
-        print("n = %i # Field size" % N)
-        print("a = %i # curve equation parameter a" % a)
-        print("b = %i # curve equation parameter b" % b)
-        print("d = %i # non-square in GF(n)" % D)
-        print("n1 = %i # Order of E1: y^2 = x^3 + a*x + b over GF(n)" % n1)
-        print("n2 = %i # Order of E2: y^2 = x^3 + a*d^2*x + b*d^3 over GF(n)" % n2)
-        print("e1 = (n1 - 1) / %i # Embedding degree of E1" % embedding_degree(E1))
-        print("e2 = (n2 - 1) / %i # Embedding degree of E2" % embedding_degree(E2))
+        print("P = %i # Field size" % N)
+        print("A = %i # curve equation parameter a" % a)
+        print("B = %i # curve equation parameter b" % b)
+        print("D = %i # non-square in GF(n)" % D)
+        print("N1 = %i # Order of E1: y^2 = x^3 + a*x + b over GF(n)" % n1)
+        print("N2 = %i # Order of E2: y^2 = x^3 + a*d^2*x + b*d^3 over GF(n)" % n2)
+        print("# E1 = (n1 - 1) / %i # Embedding degree of E1" % embedding_degree(E1))
+        print("# E2 = (n2 - 1) / %i # Embedding degree of E2" % embedding_degree(E2))
         sys.exit()
     sum_a_b += 1
 
