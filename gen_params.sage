@@ -51,10 +51,10 @@ while True:
             continue
 
         # Preliminary analysis on E2: y^2 = x^3 + a*x + b
-        E2 = EllipticCurve(F, [a * D2, b * D3])
-        n2 = E2.order()
+        n2 = 2 * (N + 1) - n1
         if not is_pseudoprime(n2):
             continue
+        E2 = EllipticCurve(F, [a*D*D, b*D*D*D])
 
         # Full primarily test on both
         if not is_prime(n1) or not is_prime(n2):
