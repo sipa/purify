@@ -1,19 +1,29 @@
 # Purify: A provably-secure PRF with low multiplicative complexity
 
-Purify is a [pseudorandom function](https://en.wikipedia.org/wiki/Pseudorandom_function_family) (PRF) onto the integers
-modulo a prime *P*. It does rely on another hash function under the hood, but one that is only applied to the message.
-When that hash function is modeled as a random oracle, Purify is provably indistuishable from random assuming the
-Elliptic Curve Decision Diffie-Hellman (ECDDH) problem is hard for its chosen parameters.
+A [pseudorandom function](https://en.wikipedia.org/wiki/Pseudorandom_function_family) is a function that
+takes as input a key and a message, and to anyone who does not know the key, the function is indistinguishable
+from random.
 
-Furthermore, for any fixed message, Purify can be implemented as an arithmetic circuit that uses less
-than *16L/3* multiplication gates, where *L = &lceil;log<sub>2</sub>(P)&rceil;*.
+For certain applications a PRF is needed that can cheaply be verified in an arithmetic circuit.
+One example is when a zero-knowledge proof for the correct evaluation of the function is wanted.
+In such circuits, cost is typically dominated by the number of multiplications in
+the circuit. This leads to an unusual cost metric for various algorithms.
+As a result, schemes that are optimized for execution on real hardware
+are often far from optimal inside proofs.
 
-Lastly, the keys used in Purify have a corresponding public key, and Purify remains indistinguishable from random to
-an attacker who knows the public key. This means it can function as a VRF, but more generally, it can be used in
-zero-knowledge proofs where the output of the function is not known to the verifier. This is specifically what is needed for proving
-deterministic nonces for Schnorr signatures over a group of order *P* were computed correctly. In this case,
-a single proof that both evaluates Purify for a public message and a secret key, and proves the secret key
-corresponds to a known public key, can be written as an arithmetic circuit using no more than *8L - 14* multiplication gates.
+Purify is a PRF onto the inputs modulo an *L*-bit prime *P* that is optimized for low multiplicative complexity. It has the following properties:
+* Purify is **provably** indistinguishable from random at a security level of approximately *L/2* bits, assuming elliptic curves with certain properties over *GF(P)* can be found.
+* For a given message, an arithmetic circuit over *GF(P)* can verify a Purify evaluation using less than *16L/3* multiplication gates.
+* If in addition to evaluation of the PRF also verification of a (publicly known) commitment to the key is needed, a combined circuit with less than *8L* gates is possible. It can be shown that Purify remains indistinguishable from random to an attacker who knows this commitment to the key.
+
+The last property is useful in the context of proving that deterministic nonces in multiparty Schnorr schemes were correctly evaluated. In an upcoming paper,
+we will show that this construction is secure in that context.
+
+Hash functions are typically expensive inside arithmetic circuits. While Purify does rely on a hash function, it only hashes the messages, not the key.
+This means that proofs in which the message is public, the hash function can be evaluated outside of the circuit.
+Because of this the multiplicative complexity can be kept relatively low without giving up provable security.
+
+Our proofs model the hash functions as random oracles, and assume elliptic curves are used in which the decisional Diffie-Hellman problem is hard.
 
 ## Parameters
 
