@@ -603,8 +603,8 @@ elif sys.argv[1] == "gen":
     P1 = E1.affine(E1.mul(G1, z1))
     P2 = E2.affine(E2.mul(G2, z2))
 
-    print("seckey: %x" % z)
-    print("pubkey: %x" % pack_public(P1[0], P2[0]))
+    print("z=%x # private key" % z)
+    print("x=%x # public key" % pack_public(P1[0], P2[0]))
 elif sys.argv[1] == "eval":
     z = int(sys.argv[2], 16)
     m = bytes.fromhex(sys.argv[3])

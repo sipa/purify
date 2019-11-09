@@ -61,13 +61,13 @@ while True:
             continue
 
         print("P = %i # Field size" % N)
-        print("A = %i # curve equation parameter a" % a)
-        print("B = %i # curve equation parameter b" % b)
-        print("D = %i # non-square in GF(n)" % D)
-        print("N1 = %i # Order of E1: y^2 = x^3 + a*x + b over GF(n)" % n1)
-        print("N2 = %i # Order of E2: y^2 = x^3 + a*d^2*x + b*d^3 over GF(n)" % n2)
-        print("# E1 = (n1 - 1) / %i # Embedding degree of E1" % embedding_degree(E1))
-        print("# E2 = (n2 - 1) / %i # Embedding degree of E2" % embedding_degree(E2))
+        print("A = %i # curve equation parameter A" % a)
+        print("B = %i # curve equation parameter B" % b)
+        print("D = %i # non-square in GF(P)" % D)
+        print("N1 = %i # Order of E1: y^2 = x^3 + A*x + B over GF(P)" % n1)
+        print("N2 = %i # Order of E2: y^2 = x^3 + A*D^2*x + B*D^3 over GF(P)" % n2)
+        print("# E1 = (N1 - 1) / %i # Embedding degree of E1" % embedding_degree(E1))
+        print("# E2 = (N2 - 1) / %i # Embedding degree of E2" % embedding_degree(E2))
         sys.exit()
     sum_a_b += 1
 
