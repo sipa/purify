@@ -564,10 +564,13 @@ def circuit_ec_multiply_x(curve, trans, p, bits):
         p3n1 = curve.add(p3n, p_pows[0])
         lookups.append(circuit_2bit_point(curve, [pn, pn1, p3n, p3n1], trans, bits[0], bits[-1]))
 
-    ret = lookups[0]
-    for i in range(1, len(lookups) - 1):
-        ret = circuit_ec_add(curve, trans, ret, lookups[i])
-    return circuit_ec_add_x(curve, trans, ret, lookups[-1])
+    if len(lookups) == 1:
+        return lookups[0][0]
+    else:
+        ret = lookups[0]
+        for i in range(1, len(lookups) - 1):
+            ret = circuit_ec_add(curve, trans, ret, lookups[i])
+        return circuit_ec_add_x(curve, trans, ret, lookups[-1])
 
 def circuit_combine(trans, x1, x2):
     """Construct a circuit that combines two uniform X values (on E1 and E2) into a uniform GF(P) element."""
