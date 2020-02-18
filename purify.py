@@ -398,39 +398,19 @@ class Transcript:
 #        self.eqs.append(bitsum - e)
 #        return ret
 
-def hmac_sha256(key, data):
-    return hmac.new(key, data, hashlib.sha256).digest()
-
-def hkdf(length, ikm, salt=b"", info=b""):
-    """Implement HKDF using HMAC-SHA256."""
-
-    prk = hmac_sha256(salt if len(salt) > 0 else bytes([0]*hash_len), ikm)
-    t = b""
-    okm = b""
-    for i in range(ceil(length / 32)):
-        t = hmac_sha256(prk, t + info + bytes([1+i]))
-        okm += t
-    return okm[:length]
-
-def hash_to_int(data, rang, info=b""):
-    """Implement a uniform hash-to-int using HKDF."""
+def hash_to_int(data, rang):
     bits = rang.bit_length()
     mask = 2 ** bits - 1
     for i in range(256):
-        v = int.from_bytes(hkdf((bits + 7) // 8, data, bytes([i]), info), 'big') & mask
+        v = int.from_bytes(b''.join(hashlib.sha256(bytes([j,i]) + data).digest() for j in range((bits + 255) // 256)), 'big') & mask
         if v < rang:
             return v
 
 def hash_to_curve(data, curve):
-    """Implement a uniform hash-to-curve using HKDF."""
-    rang = 2 * curve.p
     for i in range(256):
-        v = hash_to_int(data, rang, bytes([i]))
-        if curve.is_x_coord(v // 2):
-            p = curve.lift_x(v // 2)
-            if v & 1:
-                p = curve.negate(p)
-            return p
+        v = hash_to_int(bytes([i]) + data, curve.p)
+        if curve.is_x_coord(v):
+            return curve.lift_x(v)
 
 E1 = EllipticCurve(P, A, B, N1)
 E2 = EllipticCurve(P, (A * D * D) % P, (B * D * D * D) % P, N2)
@@ -612,16 +592,16 @@ elif sys.argv[1] == "eval":
     z = int(sys.argv[2], 16)
     m = bytes.fromhex(sys.argv[3])
     z1, z2 = unpack_secret(z)
-    M1 = hash_to_curve(b"Eval/1/" + m, E1)
-    M2 = hash_to_curve(b"Eval/2/" + m, E2)
+    M1 = hash_to_curve(b"Eval/" + m + b"/1", E1)
+    M2 = hash_to_curve(b"Eval/" + m + b"/2", E2)
     Q1 = E1.affine(E1.mul(M1, z1))
     Q2 = E2.affine(E2.mul(M2, z2))
     out = combine(Q1[0], Q2[0])
     print("eval: %x" % out)
 elif sys.argv[1] == "verifier":
     m = bytes.fromhex(sys.argv[2])
-    M1 = hash_to_curve(b"Eval/1/" + m, E1)
-    M2 = hash_to_curve(b"Eval/2/" + m, E2)
+    M1 = hash_to_curve(b"Eval/" + m + b"/1", E1)
+    M2 = hash_to_curve(b"Eval/" + m + b"/2", E2)
     trans = Transcript()
     out, P1x, P2x = circuit_main(trans, M1, M2)
     print("def verify(pubkey, output, v):")
@@ -641,8 +621,8 @@ elif sys.argv[1] == "prove":
     m = bytes.fromhex(sys.argv[2])
     z = int(sys.argv[3], 16)
     z1, z2 = unpack_secret(z)
-    M1 = hash_to_curve(b"Eval/1/" + m, E1)
-    M2 = hash_to_curve(b"Eval/2/" + m, E2)
+    M1 = hash_to_curve(b"Eval/" + m + b"/1", E1)
+    M2 = hash_to_curve(b"Eval/" + m + b"/2", E2)
     P1 = E1.affine(E1.mul(G1, z1))
     P2 = E2.affine(E2.mul(G2, z2))
     Q1 = E1.affine(E1.mul(M1, z1))
